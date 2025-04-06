@@ -23,7 +23,7 @@ const productsSchema = new mongoose.Schema({
 const Products = mongoose.model("products", productsSchema);
 
 // Dean API endpoint
-app.get("/api/products", async (req, res) => {
+app.get("/api/products/:productId", async (req, res) => {
       try {
             const manyProducts = await Products.find();
             res.json(manyProducts);
