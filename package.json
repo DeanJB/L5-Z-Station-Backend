@@ -1,4 +1,4 @@
-{
+
   "name": "mission-05-backend",
   "version": "1.0.0",
   "description": "",
@@ -20,4 +20,5 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.0.3"
   }
+
 }
