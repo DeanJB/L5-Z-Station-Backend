@@ -11,40 +11,34 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Connect to MongoDB Local
+// Get MongoDB URI from environment variables
+const dbURI = process.env.MONGODB_URI;
+
+if (!dbURI) {
+  console.error("Error: MONGODB_URI is not defined in the .env file");
+  process.exit(1); // Exit the application if URI is not set
+}
+
+// Connect to MongoDB
 mongoose
-  .connect("mongodb://127.0.0.1:27017/Accounts")
+  .connect(dbURI)
   .then(() => {
-    console.log("Connected to MongoDB Local - Accounts database");
-    console.log("Database connection successful!");
+    console.log("MongoDB Connected Successfully to:", dbURI);
+    // Start the server only after successful DB connection
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
   })
-  .catch((err) => console.error("MongoDB connection error:", err));
+  .catch((err) => {
+    console.error("MongoDB connection error:", err);
+    process.exit(1); // Exit if DB connection fails
+  });
 
 // Routes
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/users", require("./routes/user"));
 app.use("/api/tanks", require("./routes/tank"));
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
-
-//Dean
-
-// const dbURI = process.env.MONGODB_URI;
-
-// Connect to MongoDB Compass
-mongoose
-      .connect("mongodb://127.0.0.1:27017/Products-Z-Station")
-      .then(() => {
-            console.log("MongoDB Connected Successfully");
-      })
-      .catch((err) => console.log("MongoDB Connection Error:", err));
-
-app.listen(PORT, () => {
-      console.log(`server running on ${PORT} `);
-});
 
 // Dean API endpoint
 app.get("/api/products/:productId", async (req, res) => {
