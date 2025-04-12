@@ -1,44 +1,29 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const dotenv = require("dotenv");
+const cors = require("cors");
+require("dotenv").config();
+
 const app = express();
-const port = process.env.PORT || 5000;
 
-dotenv.config();
+// Middleware
+app.use(cors());
+app.use(express.json());
 
-const dbURI = process.env.MONGODB_URI;
-
-// Connect to MongoDB Atlas
+// Connect to MongoDB Local
 mongoose
-      .connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
-      .then(() => console.log("MongoDB Connected"))
-      .catch((err) => console.log(err));
+  .connect("mongodb://127.0.0.1:27017/Accounts")
+  .then(() => {
+    console.log("Connected to MongoDB Local - Accounts database");
+    console.log("Database connection successful!");
+  })
+  .catch((err) => console.error("MongoDB connection error:", err));
 
-// Schema
-const productsSchema = new mongoose.Schema({
-      name: String,
-      image: String,
+// Routes
+app.use("/api/auth", require("./routes/auth"));
+app.use("/api/users", require("./routes/user"));
+app.use("/api/tanks", require("./routes/tank"));
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
-
-const Products = mongoose.model("products", productsSchema);
-
-// Dean API endpoint
-app.get("/api/products", async (req, res) => {
-      try {
-            const manyProducts = await Products.find();
-            res.json(manyProducts);
-      } catch (err) {
-            res.status(500).json({ message: err.message });
-      }
-});
-// >>>>>>>>>>>>>>>>>>>
-
-// Mac API endpoint
-
-// >>>>>>>>>>>>>>>>>>>
-
-// Hamish API endpoint
-
-// >>>>>>>>>>>>>>>>>>>
-
-app.listen(port, () => console.log(`Server started on port ${port}`));
