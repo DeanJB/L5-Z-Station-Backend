@@ -98,7 +98,7 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({ message });
     }
 
-    // Create new user (without password)
+    // Create new user
     const user = new User({
       email,
       firstName,
@@ -109,7 +109,7 @@ router.post("/register", async (req, res) => {
 
     console.log("Attempting to save user:", user);
     await user.save(); // The pre-save hook will skip password hashing
-    console.log("User saved successfully (without password)");
+    console.log("User saved successfully");
 
     // Generate JWT token
     const token = jwt.sign(

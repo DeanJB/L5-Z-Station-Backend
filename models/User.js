@@ -33,19 +33,28 @@ const userSchema = new mongoose.Schema(
     cardNumber: {
       type: String,
       trim: true,
+      select: false, // Exclude by default when fetching user data
     },
     expiryDate: {
       type: String,
       trim: true,
-      // Note: Storing CVV and Expiry Date is sensitive and requires security measures (PCI DSS compliance)
-      // For this example, we'll store them as strings. Consider encryption or tokenization for production.
+      select: false, // Exclude by default
     },
     cvv: {
       type: String,
       trim: true,
-      // Consider security implications
+      select: false, // Exclude by default
     },
     nameOnCard: {
+      type: String,
+      trim: true,
+      select: false, // Exclude by default
+    },
+    cardBrand: {
+      type: String,
+      trim: true,
+    },
+    cardLast4: {
       type: String,
       trim: true,
     },
@@ -88,9 +97,13 @@ userSchema.methods.comparePassword = async function (candidatePassword) {
 };
 */
 
-// Create the model with explicit database and collection names
-const User = mongoose.model("User", userSchema, "Users", {
-  database: "Accounts",
-});
+// Create the model - It will use the default connection (Products-Z-Station)
+// and store data in the 'users' collection (Mongoose pluralizes 'User').
+const User = mongoose.model("User", userSchema);
+
+// The explicit database definition below is removed to use the default connection.
+// const User = mongoose.model("User", userSchema, "Users", {
+//   database: "Accounts",
+// });
 
 module.exports = User;
