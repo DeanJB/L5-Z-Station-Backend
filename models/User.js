@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-// const bcrypt = require("bcrypt"); // Removed unused import
+const bcrypt = require("bcrypt"); // Import bcrypt
 
 const userSchema = new mongoose.Schema(
   {
@@ -73,6 +73,22 @@ const userSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+// Pre-save hook to hash card number
+userSchema.pre("save", async function (next) {
+  // Only hash the card number if it has been modified (or is new)
+  if (!this.isModified("cardNumber") || !this.cardNumber) return next();
+
+  try {
+    // Generate a salt and hash the card number
+    const salt = await bcrypt.genSalt(10); // 10 rounds is generally recommended
+    this.cardNumber = await bcrypt.hash(this.cardNumber, salt);
+    next();
+  } catch (error) {
+    console.error("Error hashing card number:", error);
+    next(error); // Pass error to Mongoose
+  }
+});
 
 // Hash password before saving - Removed as password is not used
 /*
